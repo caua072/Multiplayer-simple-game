@@ -47,11 +47,12 @@ class Player():
         self.rect = (self.x, self.y, self.WIDTH, self.HEIGHT)
 
 def read_pos(str):
-    str = str.split(',')
+    str = str.split(",")
     return int(str[0]), int(str[1])
 
+
 def make_pos(tup):
-    return str(tup[0]) + ',' + str(tup[1])
+    return str(tup[0]) + "," + str(tup[1])
 
 def redrawWindow(win, player, player2):
 
@@ -75,9 +76,10 @@ def main():
     while run:
         clock.tick(60)
 
-        p2Pos = n.send(make_pos((p.x, p.y)))
+        p2Pos = read_pos(n.send(make_pos((p.x, p.y))))
         p2.x = p2Pos[0]
         p2.y = p2Pos[1]
+        p2.update()
 
         for events in pygame.event.get():
             if events.type == pygame.QUIT:

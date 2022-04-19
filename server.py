@@ -15,23 +15,37 @@ except socket.error as e:
 s.listen(2)
 print('Server started test')
 
-def threading_client(conn):
+def read_pos(str):
+    str = str.split(",")
+    return int(str[0]), int(str[1])
 
-    conn.send(str.encode('Connected'))
+
+def make_pos(tup):
+    return str(tup[0]) + "," + str(tup[1])
+
+pos = [(0, 0),(100, 100)]
+
+def threading_client(conn, player):
+
+    conn.send(str.encode(make_pos(pos[player])))
     reply = ''
     while True:
         try:
-            data = conn.recv(2048 * 8)
-            reply = data.decode('utf-8')
+            data = read_pos(conn.recv(2048).decode())
+            pos[player] = data
 
             if not data:
                 print('Disconnected')
                 break
             else:
-                print('Received: ', reply)
-                print('Sending: '. reply)
+                if player == 1:
+                    reply = pos[0]
+                else:
+                    reply = pos[1]
+                print('Received: ', data)
+                print('Sending: ', reply)
 
-            conn.sendall(str.encode(reply))
+            conn.sendall(str.encode(make_pos(reply)))
 
         except:
             break
@@ -40,8 +54,12 @@ def threading_client(conn):
     conn.close()
 
 
+currentPlayer = 0
+
 while True:
+    print(currentPlayer)
     conn, addr = s.accept()
     print('Connect to:', addr)
 
-    start_new_thread(threading_client, (conn,))
+    start_new_thread(threading_client,(conn, currentPlayer))
+    currentPlayer += 1
